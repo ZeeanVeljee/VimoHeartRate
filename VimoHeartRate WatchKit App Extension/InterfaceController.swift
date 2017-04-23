@@ -17,6 +17,7 @@ class InterfaceController: WKInterfaceController, HKWorkoutSessionDelegate {
     @IBOutlet fileprivate weak var deviceLabel : WKInterfaceLabel!
     @IBOutlet fileprivate weak var heart: WKInterfaceImage!
     @IBOutlet fileprivate weak var startStopButton : WKInterfaceButton!
+    var timer: Timer?
     
     let healthStore = HKHealthStore()
     
@@ -40,7 +41,7 @@ class InterfaceController: WKInterfaceController, HKWorkoutSessionDelegate {
             label.setText("not available")
             return
         }
-    
+        
         guard let quantityType = HKQuantityType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate) else {
             displayNotAllowed()
             return
@@ -99,14 +100,23 @@ class InterfaceController: WKInterfaceController, HKWorkoutSessionDelegate {
             self.startStopButton.setTitle("Start")
             if let workout = self.workoutSession {
                 healthStore.end(workout)
+                //_ = HKQuantity(unit: HKUnit(from: "count/min"),
+                                                   //doubleValue: Double(arc4random_uniform(100) + 60))
+                startMockHeartData()
             }
         } else {
             //start a new workout
             self.workoutActive = true
             self.startStopButton.setTitle("Stop")
             startWorkout()
+            
+            
+            //_ = HKQuantity(unit: HKUnit(from: "count/min"),
+                                              // doubleValue: Double(arc4random_uniform(100) + 60))
+            
+            startMockHeartData()
         }
-
+        
     }
     
     func startWorkout() {
@@ -122,7 +132,7 @@ class InterfaceController: WKInterfaceController, HKWorkoutSessionDelegate {
         guard let quantityType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate) else { return nil }
         
         let heartRateQuery = HKAnchoredObjectQuery(type: quantityType, predicate: nil, anchor: anchor, limit: Int(HKObjectQueryNoLimit)) { (query, sampleObjects, deletedObjects, newAnchor, error) -> Void in
-            guard let newAnchor = newAnchor else {return} 
+            guard let newAnchor = newAnchor else {return}
             self.anchor = newAnchor
             self.updateHeartRate(sampleObjects)
         }
@@ -170,4 +180,21 @@ class InterfaceController: WKInterfaceController, HKWorkoutSessionDelegate {
             })
         }
     }
+    
+    func rateheart() {
+        var rate = Double(arc4random_uniform(15) + 60)
+        label.setText("\(rate)")
+
+    }
+    
+    func startMockHeartData() {
+        timer = Timer.scheduledTimer(timeInterval: 1.2, target: self, selector: #selector(InterfaceController.rateheart), userInfo: nil, repeats: true)
+    }
+
 }
+
+/*timeInterval: 1.0,
+ target: self,
+ selector: #selector(HealthKitManager.saveMockHeartData),
+ userInfo: nil,
+ repeats: true*/

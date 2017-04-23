@@ -14,6 +14,7 @@ class HealthKitManager: NSObject {
     
     static let healthKitStore = HKHealthStore()
     static var timer: Timer?
+    var rate: String = ""
     
     static func authorizeHealthKit() {
         
@@ -39,6 +40,8 @@ class HealthKitManager: NSObject {
         healthKitStore.save(heartSample, withCompletion: { (success, error) -> Void in
             if let error = error {
                 print("Error saving heart sample: \(error.localizedDescription)")
+                
+                
             }
         })
     }
